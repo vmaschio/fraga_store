@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block body %}
+
+<style>
+  .banner-grid {
+    display: grid;
+    grid-template-columns: 1fr !important; 
+    width: 100% !important;
+    gap: 0;
+  }
+
+  .banner-grid__imagem {
+    width: 100%;
+    display: block;
+  }
+
+  .banner-grid__imagem img {
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+    display: block; 
+  }
+</style>
+
+<main class="principal">
+
+    <section class="banner-grid">
+    {% for banner in banners %}
+      <a
+        href="{% url 'loja' %}{{ banner.link_destino }}"
+        class="banner-grid__imagem"
+      >
+        <img
+          src="{{ banner.imagem.url }}"
+          alt="{{ banner.link_destino }}"
+        />
+      </a>
+    {% endfor %}
+    </section>
+
+  </main>
+
+{% endblock %}

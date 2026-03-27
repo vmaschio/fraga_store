@@ -1,0 +1,141 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block body %}
+
+<style>
+  /* Estilos para o carrinho vazio */
+  .carrinho-vazio { text-align: center; padding: 80px 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; background-color: #f9f9f9; border-radius: 8px; margin: 40px auto; max-width: 800px; }
+  .carrinho-vazio i { font-size: 80px; color: #cccccc; margin-bottom: 25px; }
+  .carrinho-vazio h2 { font-size: 28px; color: #333; margin-bottom: 15px; }
+  .carrinho-vazio p { color: #666; margin-bottom: 30px; max-width: 400px; }
+  .carrinho-vazio .botao-loja { display: inline-block; padding: 15px 35px; background-color: #007bff; color: white; text-decoration: none; font-weight: bold; border-radius: 5px; transition: background-color 0.3s ease; }
+  .carrinho-vazio .botao-loja:hover { background-color: #0056b3; }
+
+  /* Estilos para as mensagens de sucesso/erro */
+  .alert {
+    padding: 1rem 1.5rem;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+  .alert-success {
+    color: #155724;
+    background-color: #d4edda;
+    border-color: #c3e6cb;
+  }
+
+  /* Estilo para o container interno do carrinho (para manter o layout lado a lado) */
+  .carrinho-container-interno {
+    display: flex;
+    flex-flow: row nowrap;
+    align-items: start;
+    justify-content: start;
+    gap: 3.9rem;
+    width: 100%;
+    background-color: #f0f0f0; /* Cor de fundo que estava na classe .carrinho */
+    padding: 0; /* O padding agora é controlado pelo 'secao-checkout' */
+  }
+  @media (max-width: 59.375em) {
+    .carrinho-container-interno {
+      flex-direction: column;
+      align-items: center;
+    }
+  }
+</style>
+
+<main class="principal">
+    
+    {% if cliente_existente and pedido.quantidade_total > 0 %}
+    
+    <section class="secao-checkout">
+      
+      <a href="{% url 'loja' %}" class="checkout__botao">Voltar à loja</a>
+
+      {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">
+                {{ message }}
+            </div>
+        {% endfor %}
+      {% endif %}
+
+      <div class="carrinho-container-interno">
+        <div class="sacola">
+          <div class="sacola__titulos">
+            <h1 class="sacola__titulo">Sacola</h1>
+            <p>Confira seu pedido e finalize no botão ao lado</p>
+          </div>
+          <table class="tabela">
+            {% for item in itens_pedido %}
+            <tr>
+              <td class="tabela__produto">
+                <div class="tabela__imagem">
+                  <img src="{{ item.item_estoque.produto.imagem.url }}" alt="{{ item.item_estoque.produto.nome }}" />
+                </div>
+                <div class="tabela__produto-textos">
+                  <p><b>{{ item.item_estoque.produto.nome }}</b></p>
+                  <p><b>Tamanho:</b> {{ item.item_estoque.tamanho }}</p>
+                  <p><b>Cor:</b> {{ item.item_estoque.cor.nome }}</p>
+                </div>
+              </td>
+              <td class="tabela__preco-unit">
+                <p class="tabela__preco" style="display: flex; align-items:center"><img src="{% static 'images/moeda.png' %}" style="height:50px; width:50px">{{ item.item_estoque.produto.preco_fragacoin }}</p>
+              </td>
+              <td class="tabela__qtd">
+                <div class="tabela__quantidade">
+                  <form method="POST" action="{% url 'remover_carrinho' item.item_estoque.produto.id %}">
+                      {% csrf_token %}
+                      <input type="hidden" name="tamanho" value="{{ item.item_estoque.tamanho }}">
+                      <input type="hidden" name="cor" value="{{ item.item_estoque.cor.id }}">
+                      <button type="submit">-</button>
+                  </form>
+                  <span>{{ item.quantidade }}</span>
+                  <form method="POST" action="{% url 'adicionar_carrinho' item.item_estoque.produto.id %}">
+                      {% csrf_token %}
+                      <input type="hidden" name="tamanho" value="{{ item.item_estoque.tamanho }}">
+                      <input type="hidden" name="cor" value="{{ item.item_estoque.cor.id }}">
+                      <button type="submit">+</button>
+                  </form>
+                </div>
+              </td>
+              <td>
+                <p class="tabela__preco tabela__preco--total" style="display: flex; align-items:center"><img src="{% static 'images/moeda.png' %}" style="height:50px; width:50px">{{ item.preco_total_fragacoin }}</p>
+              </td>
+            </tr>
+            {% endfor %}
+          </table>
+        </div>
+        <div class="subtotal">
+          <div class="subtotal__infos">
+            <p>Quantidade de Produtos</p>
+            <p>{{ pedido.quantidade_total }}</p>
+          </div>
+          <div class="subtotal__infos subtotal__infos--sborda">
+            <p>Total</p>
+            <p style="display: flex; align-items:center"><img src="{% static 'images/moeda.png' %}" style="height:50px; width:50px">{{ pedido.preco_total_fragacoin }}</p>
+          </div>
+          <a href="{% url 'checkout' %}" class="subtotal__botao" >Ir ao checkout</a>
+        </div>
+      </div>
+    </section>
+
+    {% else %}
+        {% if messages %}
+          {% for message in messages %}
+              <div class="alert alert-{{ message.tags }}">
+                  {{ message }}
+              </div>
+          {% endfor %}
+        {% endif %}
+        <section class="carrinho-vazio">
+            <i class="fa-solid fa-cart-shopping"></i>
+            <h2>Seu carrinho de compras está vazio</h2>
+            <p>Parece que você ainda não adicionou nenhum item. Que tal dar uma olhada em nossos produtos incríveis?</p>
+            <a href="{% url 'loja' %}" class="botao-loja">Ver Produtos</a>
+        </section>
+    {% endif %}
+  </main>
+
+{% endblock %}

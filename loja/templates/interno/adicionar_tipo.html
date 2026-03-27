@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block body %}
+<style>
+    .botao-voltar {
+        background-color: #6c757d;
+        color: white;
+        transition: background-color 0.3s ease;
+    }
+    .botao-voltar:hover {
+        background-color: #5a6268;
+    }
+</style>
+<main class="principal">
+    <section class="conta">
+        <a href="{% url 'gerenciar_tipos' %}" class="checkout__botao botao-voltar" style="width: auto; padding: 1rem 2rem; margin: 0 3.12rem 2rem;">Voltar</a>
+        <div class="conta__container">
+            <div class="checkout__titulos">
+                <p class="checkout__titulo">Adicionar Novo Tipo</p>
+            </div>
+            <form class="conta__form" method="post">
+                {% csrf_token %}
+                <div class="conta__item">
+                    <label for="nome">Nome do Tipo</label>
+                    <input name="nome" type="text" required>
+                </div>
+                <div class="conta__item">
+                    <label for="slug">Slug</label>
+                    <input name="slug" type="text" required>
+                </div>
+                <button class="subtotal__botao" type="submit">Adicionar Tipo</button>
+            </form>
+        </div>
+    </section>
+</main>
+{% endblock %}

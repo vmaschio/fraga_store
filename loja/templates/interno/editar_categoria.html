@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block body %}
+<main class="principal">
+    <section class="conta">
+        <div class="conta__container">
+            <div class="checkout__titulos">
+                <p class="checkout__titulo">Editar Categoria: {{ categoria.nome }}</p>
+            </div>
+            <form class="conta__form" method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="conta__item">
+                    <label for="nome">Nome da Categoria</label>
+                    <input name="nome" type="text" value="{{ categoria.nome }}" required>
+                </div>
+                <div class="conta__item">
+                    <label for="slug">Slug</label>
+                    <input name="slug" type="text" value="{{ categoria.slug }}" required>
+                </div>
+                <div class="conta__item conta__item--email">
+                    <p>Imagem Atual:</p>
+                    {% if categoria.imagem %}
+                        <img src="{{ categoria.imagem.url }}" alt="{{ categoria.nome }}" style="width: 100px; height: auto; margin-bottom: 1rem;">
+                    {% else %}
+                        <p>Nenhuma imagem cadastrada.</p>
+                    {% endif %}
+                    <label for="imagem">Trocar Imagem</label>
+                    <input name="imagem" type="file">
+                </div>
+                <button class="subtotal__botao" type="submit">Salvar Alterações</button>
+            </form>
+        </div>
+    </section>
+</main>
+{% endblock %}

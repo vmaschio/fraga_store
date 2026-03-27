@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block body %}
+<style>
+    .botao-voltar {
+        background-color: #6c757d;
+        color: white;
+        transition: background-color 0.3s ease;
+    }
+    .botao-voltar:hover {
+        background-color: #5a6268;
+    }
+</style>
+
+<main class="principal">
+    <section class="conta">
+        <a href="{% url 'gerenciar_loja' %}" class="checkout__botao botao-voltar" style="width: auto; padding: 1rem 2rem; margin: 0 3.12rem 2rem;">Voltar</a>
+
+        <div class="conta__container">
+            <div class="checkout__titulos" style="display: flex; flex-flow: row; justify-content: space-between; align-items: center; width: 100%;">
+                <p class="checkout__titulo">Gerenciar Tipos</p>
+                <a href="{% url 'adicionar_tipo' %}" class="subtotal__botao" style="width: auto; padding: 1rem 2rem;">Adicionar Tipo</a>
+            </div>
+
+            {% if messages %}
+              {% for message in messages %}
+                  <div class="alert alert-{{ message.tags }}" style="color: #155724; background-color: #d4edda; border-color: #c3e6cb; padding: 1rem 1.5rem; border-radius: 4px; text-align: center; margin-bottom: 2rem;">
+                      {{ message }}
+                  </div>
+              {% endfor %}
+            {% endif %}
+
+            <table class="tabela" style="width: 100%;">
+                <thead>
+                    <tr>
+                        <th>Nome</th>
+                        <th>Slug</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for tipo in tipos %}
+                    <tr style="border-bottom: 1px solid #f0f0f0;">
+                        <td>{{ tipo.nome }}</td>
+                        <td>{{ tipo.slug }}</td>
+                        <td style="display: flex; gap: 10px; align-items: center;">
+                            <a href="{% url 'editar_tipo' tipo.id %}" class="checkout__botao" style="width: auto; padding: 0.5rem 1rem; font-size: 1.2rem;">Editar</a>
+                            <form method="post" action="{% url 'excluir_tipo' tipo.id %}" style="display:inline;" onsubmit="return confirm('Tem certeza que deseja excluir este tipo?');">
+                                {% csrf_token %}
+                                <button type="submit" class="checkout__botao" style="background-color: #dc3545; width: auto; padding: 0.5rem 1rem; font-size: 1.2rem; border: none; cursor: pointer;">Excluir</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </section>
+</main>
+{% endblock %}

@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block body %}
+
+<style>
+  .auth-footer {
+      text-align: center;
+      margin-top: 2.5rem;
+      font-size: 1.4rem;
+      line-height: 1.6;
+  }
+  .auth-footer a {
+      color: #007bff; /* Usando uma cor azul padrão para links, ajuste se necessário */
+      text-decoration: none;
+  }
+  .auth-footer a:hover {
+      text-decoration: underline;
+  }
+  .auth-error {
+      color: #721c24;
+      background-color: #f8d7da;
+      border-color: #f5c6cb;
+      padding: 1rem 1.5rem;
+      border: 1px solid transparent;
+      border-radius: 4px;
+      text-align: center;
+      margin-bottom: 2rem;
+  }
+</style>
+
+<main class="principal">
+    <section class="conta">                 
+                         
+      <div class="conta__container">
+        <div class="checkout__titulos">
+          <p class="checkout__titulo">Faça seu Login</p>
+        </div>
+
+        {% if erro %}
+        <h4>Credenciais inválidas, tente novamente ou crie uma conta</h4>
+        {% endif %}
+
+        <form
+          class="conta__form"
+          action="{% url 'fazer_login' %}"
+          method="post"
+        >
+        {% csrf_token %}
+          <div class="conta__item">
+            <label for="email">E-mail</label>
+            <input name="email" type="email" placeholder="Email"/>
+          </div>
+
+          <div class="conta__item">
+            <label for="senha">Senha</label>
+            <input name="senha" type="password" placeholder="Senha"/>
+          </div>
+
+          <button class="subtotal__botao" type="submit">
+            Fazer Login
+          </button>
+        </form>
+
+        <div class="auth-footer"><a href="{% url 'criar_conta' %}">Não tem uma conta? Criar conta</a>
+          <br>
+          <a href="{% url 'password_reset' %}">Esqueci minha senha</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+{% endblock %}

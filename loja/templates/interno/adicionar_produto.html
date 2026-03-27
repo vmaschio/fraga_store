@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block body %}
+<style>
+    .botao-voltar {
+        background-color: #6c757d;
+        color: white;
+        transition: background-color 0.3s ease;
+    }
+    .botao-voltar:hover {
+        background-color: #5a6268;
+    }
+</style>
+<main class="principal">
+    <section class="conta">
+        <a href="{% url 'gerenciar_produtos' %}" class="checkout__botao botao-voltar" style="width: auto; padding: 1rem 2rem; margin: 0 3.12rem 2rem;">Voltar</a>
+        <div class="conta__container">
+            <div class="checkout__titulos">
+                <p class="checkout__titulo">Adicionar Novo Produto</p>
+            </div>
+
+            <form class="conta__form" method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="conta__item conta__item--email">
+                    <label for="nome">Nome do Produto</label>
+                    <input name="nome" type="text" required>
+                </div>
+                <div class="conta__item">
+                    <label for="preco">Preço (R$)</label>
+                    <input name="preco" type="number" step="0.01" required>
+                </div>
+                <div class="conta__item">
+                    <label for="preco_fragacoin">Preço (Fragacoins)</label>
+                    <input name="preco_fragacoin" type="number" required>
+                </div>
+                <div class="conta__item">
+                    <label for="categoria">Categoria</label>
+                    <select name="categoria" class="produtos__select" style="width:100%;" required>
+                        {% for categoria in categorias %}
+                        <option value="{{ categoria.id }}">{{ categoria.nome }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="conta__item">
+                    <label for="tipo">Tipo</label>
+                    <select name="tipo" class="produtos__select" style="width:100%;" required>
+                        {% for tipo in tipos %}
+                        <option value="{{ tipo.id }}">{{ tipo.nome }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="conta__item conta__item--email">
+                    <label for="descricao">Descrição</label>
+                    <textarea name="descricao" rows="4" style="width:100%; padding: 1rem; border: 1px solid #626262; border-radius: 4px;"></textarea>
+                </div>
+                <div class="conta__item conta__item--email">
+                    <label>Imagem Principal (Capa)</label>
+                    <input type="file" name="imagem" class="form-control" placeholder="Imagem">
+
+                    <label>Imagens Adicionais (Galeria)</label>
+                    <input type="file" name="imagens_extras" class="form-control" multiple>
+                </div>
+
+                <button class="subtotal__botao" type="submit">Adicionar Produto</button>
+            </form>
+        </div>
+    </section>
+</main>
+{% endblock %}

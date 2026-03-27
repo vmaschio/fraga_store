@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block body %}
+
+<main class="principal">
+    <section class="conta">
+      <div class="conta__container">
+        
+        {% comment %} ----- INÍCIO DA ALTERAÇÃO ----- {% endcomment %}
+        {% if messages %}
+          {% for message in messages %}
+              <div class="alert alert-{{ message.tags }}" style="color: #155724; background-color: #d4edda; border-color: #c3e6cb; padding: 1rem 1.5rem; border-radius: 4px; text-align: center; margin-bottom: 2rem;">
+                  {{ message }}
+              </div>
+          {% endfor %}
+        {% endif %}
+        {% comment %} ----- FIM DA ALTERAÇÃO ----- {% endcomment %}
+
+        <div class="checkout__titulos">
+          <p class="checkout__titulo">Meus pedidos</p>
+        </div>
+
+        {% for pedido in pedidos %}
+        <div class="pedido">
+          <div class="pedido__cabecalho">
+            <div>
+              <p><b>Data do pedido</b></p>
+              <p>{{ pedido.data_finalizacao }}</p>
+            </div>
+
+            <div>
+              <p><b>Total</b></p>
+              <p style="display: flex; align-items:center"><img src="{% static 'images/moeda.png' %}" style="height:50px; width:50px">{{ pedido.preco_total_fragacoin }}</p>
+            </div>
+
+            <div>
+              <p><b>Número do pedido</b></p>
+              <p>{{ pedido.id }}</p>
+            </div>
+          </div>
+
+          <div class="pedido__corpo">
+            {% for item in pedido.itens %}
+            <div class="tabela__imagem">
+              <img
+                src="{{ item.item_estoque.produto.imagem.url }}"
+                alt="{{ item.item_estoque.produto.nome }}"
+              />
+            </div>
+            <div class="tabela__produto-textos">
+              <p><b>{{ item.item_estoque.produto.nome }}</b></p>
+              <p><b>Quantidade:</b>{{item.quantidade }}</p>
+              <p><b>Tamanho:</b>{{ item.item_estoque.tamanho }}</p>
+              <p><b>Cor:</b>{{ item.item_estoque.cor.nome }}</p>
+              <p style="display: flex; align-items:center"><b>Preço:</b><img src="{% static 'images/moeda.png' %}" style="height:50px; width:50px">{{ item.preco_total_fragacoin }}</p>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+        {% empty %}
+        <div class="conta__sem-pedidos">
+            <p>Você ainda não tem nenhum pedido.</p>
+            <a class="btn" href="{% url 'loja' %}">Confira nossa loja</a>
+        </div>
+        {% endfor %}
+
+      </div>
+    </section>
+  </main>
+
+{% endblock %}

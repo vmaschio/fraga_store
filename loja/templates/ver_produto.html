@@ -1,0 +1,160 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block body %}
+
+<main class="principal principal--padding-b principal--gap">
+  {% if messages %}
+    <div style="padding: 0 4.88rem;"> 
+        {% for message in messages %}
+        <div class="alert alert-error" style="color: #721c24; background-color: #f8d7da; border: 1px solid #f5c6cb; padding: 1rem 1.5rem; border-radius: 4px; text-align: center; margin-bottom: 2rem;">
+            {{ message }}
+        </div>
+        {% endfor %}
+    </div>
+  {% endif %}
+
+    <section class="s-produto">
+      <div class="s-produto__carrossel">
+          <div class="s-produto__carrossel-itens">
+              
+              <div class="s-produto__carrossel-img">
+                  <img src="{{ imagem_exibicao.url }}" alt="{{ produto.nome }}">
+              </div>
+
+              {% for img_extra in imagens_extras %}
+              <div class="s-produto__carrossel-img">
+                  <img src="{{ img_extra.imagem.url }}" alt="{{ produto.nome }}">
+              </div>
+              {% endfor %}
+          </div>
+
+          {% if imagens_extras %}
+          <div class="s-produto__carrossel-botoes">
+              <div class="s-produto__carrossel-botao s-produto__carrossel-botao--selecionado"></div>
+              {% for img_extra in imagens_extras %}
+              <div class="s-produto__carrossel-botao"></div>
+              {% endfor %}
+          </div>
+          {% endif %}
+      </div>
+
+      <div class="s-produto__informacoes">
+        <div class="s-produto__breadcrumbs">
+          <span><a href="{% url 'loja' %}">Loja</a></span>
+          {% if produto.categoria %}
+          <span><a href="{% url 'loja' %}{{ produto.categoria.slug }}">{{ produto.categoria.nome }}</a></span>
+          {% endif %}
+          {% if produto.categoria and produto.tipo %}
+          <span><a href="{% url 'loja' %}{{ produto.categoria.slug }}-{{ produto.tipo.slug }}">{{ produto.tipo.nome }}</a></span>
+          {% endif %}
+          <span><p>{{ produto.nome }}</p></span>
+        </div>
+
+        <div class="s-produto__infos">
+          <h1 class="s-produto__titulo">{{ produto.nome }}</h1>
+
+          <p class="s-produto__preco" style="display: flex; align-items:center">
+             <img src="{% static 'images/moeda.png' %}" style="height:50px; width:50px">
+             {{ produto.preco_fragacoin }}
+          </p>
+          
+          {% if cores %}
+          <div class="s-produto__cor">
+            <p class="s-produto__cor-nome">Cor: <span>{{ cor_selecionada.nome }}</span></p>
+            <div class="s-produto__cores">
+                {% for cor in cores %}
+              <a href="{% url 'ver_produto' produto.id cor.id %}"
+                 class="s-produto__cores-item"
+                 style="background-color: {{ cor.codigo }}"></a>
+                {% endfor %}
+            </div>
+          </div>
+          {% endif %}
+        </div>
+      
+        {% if produto.descricao %}
+        <div class="s-produto__descricao">
+          <p><b>DESCRIÇÃO DO PRODUTO</b></p>
+          <div class="s-produto__descricao-textos">
+            <p>{{ produto.descricao }}</p>
+          </div>
+        </div>
+        {% endif %}
+
+        <div class="s-produto__compra">
+          {% if tem_estoque %}
+            {% if has_variations %}
+                {% if tamanhos or not cores or cor_selecionada %}
+                <form method="POST" action="{% url 'adicionar_carrinho' produto.id %}">
+                    {% csrf_token %}
+                    
+                    {% if tamanhos %}
+                    <div class="s-produto__tamanho">
+                        <p class="s-produto__tamanho-nome">Tamanho: <span></span></p>
+                        <div class="s-produto__tamanhos">
+                        {% for tamanho in tamanhos %}
+                        <div class="menu__tamanho">
+                            <label class="s-produto__tamanhos-item" for="tamanho-{{ tamanho }}">{{ tamanho }}</label>
+                            <input class="menu__checkbox" id="tamanho-{{ tamanho }}" type="radio" name="tamanho" value="{{ tamanho }}">
+                        </div>
+                        {% endfor %}
+                        </div>
+                    </div>
+                    {% endif %}
+                    
+                    {% if cor_selecionada %}
+                    <input type="hidden" name="cor" value="{{ cor_selecionada.id }}">
+                    {% endif %}
+                    
+                    <button type="submit" class="s-produto__adicicionar">Adicionar à sacola</button>
+                </form>
+
+                {% elif cor_selecionada and tamanhos %}
+                    <p>Selecione um tamanho.</p>
+                {% else %}
+                    <p>Selecione uma cor para ver a disponibilidade.</p>
+                {% endif %}
+
+            {% else %}
+                <form method="POST" action="{% url 'adicionar_carrinho' produto.id %}">
+                    {% csrf_token %}
+                    <button type="submit" class="s-produto__adicicionar">Adicionar à sacola</button>
+                </form>
+            {% endif %}
+
+          {% else %}
+              <h3>Item fora de estoque</h3>
+          {% endif %}
+        </div>
+      </div>
+    </section>
+
+    {% if similares %}
+    <section class="similares">
+      <h2 class="similares__titulo">Gostou desse produto? Veja itens similares</h2>
+      <div class="similares__container">
+        {% for similar in similares %}
+        <a href="{% url 'ver_produto' similar.id %}" class="produto">
+          <div class="produto__imagem">
+            <img src="{{ similar.imagem.url }}" alt="Imagem do Produto" />
+          </div>
+          <div class="produto__textos">
+            <p class="produto__titulo">{{ similar.nome }}</p>
+            <div class="produto__preco">
+              <p class="produto__avista" style="display: flex; align-items:center">
+                 <img src="{% static 'images/moeda.png' %}" style="height:50px; width:50px">
+                 {{ similar.preco_fragacoin }}
+              </p>
+            </div>
+          </div>
+        </a>
+        {% endfor %}
+      </div>
+    </section>
+    {% endif %}
+</main>
+
+<script src="{% static 'js/produto.js' %}"></script>
+
+{% endblock %}

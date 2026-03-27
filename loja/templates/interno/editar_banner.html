@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block body %}
+<main class="principal">
+    <section class="conta">
+        <div class="conta__container">
+            <div class="checkout__titulos">
+                <p class="checkout__titulo">Editar Banner</p>
+            </div>
+            <form class="conta__form" method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="conta__item">
+                    <label for="link_destino">Link de Destino</label>
+                    <select name="link_destino" class="produtos__select" style="width:100%;" required>
+                        <option value="">Selecione um destino</option>
+                        <optgroup label="Categorias">
+                            {% for categoria in categorias %}
+                            <option value="{{ categoria.slug }}" {% if categoria.slug == banner.link_destino %}selected{% endif %}>{{ categoria.nome }}</option>
+                            {% endfor %}
+                        </optgroup>
+                        <optgroup label="Tipos">
+                             {% for tipo in tipos %}
+                            <option value="{{ tipo.slug }}" {% if tipo.slug == banner.link_destino %}selected{% endif %}>{{ tipo.nome }}</option>
+                            {% endfor %}
+                        </optgroup>
+                    </select>
+                </div>
+                <div class="conta__item conta__item--email">
+                    <p>Imagem Atual:</p>
+                    <img src="{{ banner.imagem.url }}" alt="{{ banner.link_destino }}" style="width: 150px; height: auto; margin-bottom: 1rem;">
+                    <label for="imagem">Trocar Imagem</label>
+                    <input name="imagem" type="file">
+                </div>
+                <div class="conta__item">
+                    <label for="ativo">Ativo?</label>
+                    <input type="checkbox" name="ativo" {% if banner.ativo %}checked{% endif %}>
+                </div>
+                <button class="subtotal__botao" type="submit">Salvar Alterações</button>
+            </form>
+        </div>
+    </section>
+</main>
+{% endblock %}

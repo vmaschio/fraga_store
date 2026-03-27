@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+{% load static %}
+
+
+{% block body %}
+<style>
+    .botao-voltar {
+        background-color: #6c757d;
+        color: white;
+        transition: background-color 0.3s ease;
+    }
+    .botao-voltar:hover {
+        background-color: #5a6268;
+    }
+</style>
+<main class="principal">
+    <section class="conta">
+        <a href="{% url 'gerenciar_banners' %}" class="checkout__botao botao-voltar" style="width: auto; padding: 1rem 2rem; margin: 0 3.12rem 2rem;">Voltar</a>
+        <div class="conta__container">
+            <div class="checkout__titulos">
+                <p class="checkout__titulo">Adicionar Novo Banner</p>
+            </div>
+            <form class="conta__form" method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="conta__item">
+                    <label for="link_destino">Link de Destino</label>
+                    <select name="link_destino" class="produtos__select" style="width:100%;" required>
+                        <option value="">Selecione um destino</option>
+                        <optgroup label="Categorias">
+                            {% for categoria in categorias %}
+                            <option value="{{ categoria.slug }}">{{ categoria.nome }}</option>
+                            {% endfor %}
+                        </optgroup>
+                        <optgroup label="Tipos">
+                            {% for tipo in tipos %}
+                            <option value="{{ tipo.slug }}">{{ tipo.nome }}</option>
+                            {% endfor %}
+                        </optgroup>
+                    </select>
+                </div>
+                <div class="conta__item conta__item--email">
+                    <label for="imagem">Imagem do Banner</label>
+                    <input name="imagem" type="file" required>
+                </div>
+                <div class="conta__item">
+                    <label for="ativo">Ativo?</label>
+                    <input type="checkbox" name="ativo" checked>
+                </div>
+                <button class="subtotal__botao" type="submit">Adicionar Banner</button>
+            </form>
+        </div>
+    </section>
+</main>
+{% endblock %}

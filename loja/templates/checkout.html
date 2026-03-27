@@ -1,0 +1,131 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block body %}
+<style>
+    .login-prompt {
+        text-align: center;
+        background-color: #f8f9fa;
+        border: 1px solid #dee2e6;
+        border-radius: 8px;
+        padding: 50px 30px;
+        margin: 40px auto;
+        max-width: 600px;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+    }
+    .login-prompt i {
+        font-size: 50px;
+        color: #6c757d;
+        margin-bottom: 20px;
+    }
+    .login-prompt h2 {
+        font-size: 24px;
+        color: #343a40;
+        margin-bottom: 15px;
+    }
+    .login-prompt p {
+        color: #495057;
+        margin-bottom: 30px;
+        line-height: 1.6;
+    }
+    .login-prompt__actions {
+        display: flex;
+        justify-content: center;
+        gap: 15px;
+        flex-wrap: wrap;
+    }
+    .login-prompt__actions a {
+        padding: 12px 25px;
+        text-decoration: none;
+        border-radius: 5px;
+        font-weight: bold;
+        transition: all 0.3s ease;
+        border: 1px solid transparent;
+    }
+    .botao-login {
+        background-color: #007bff;
+        color: white;
+    }
+    .botao-login:hover {
+        background-color: #0056b3;
+    }
+    .botao-criar-conta {
+        background-color: transparent;
+        color: #007bff;
+        border-color: #007bff;
+    }
+    .botao-criar-conta:hover {
+        background-color: #007bff;
+        color: white;
+    }
+</style>
+
+<main class="principal">
+    <section class="secao-checkout">
+        <a href="{% url 'carrinho' %}" class="checkout__botao">Voltar ao carrinho</a>
+
+        <div class="checkout">
+            {% if messages %}
+            <ul class="messages" style="list-style: none; padding: 10px; background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; border-radius: 5px; margin-bottom: 20px;">
+                {% for message in messages %}
+                <li class="{{ message.tags }}">{{ message }}</li>
+                {% endfor %}
+            </ul>
+            {% endif %}
+
+            <form class="checkout__form" action="{% url 'finalizar_pedido' pedido.id %}" method="post">
+                {% csrf_token %}
+
+                {% if not request.user.is_authenticated %}
+                <div class="login-prompt">
+                    <i class="fa-solid fa-user-lock"></i>
+                    <h2>Você precisa estar conectado para continuar</h2>
+                    <p>Para finalizar sua compra e utilizar seus Fragacoins, por favor, faça o login. Se você ainda não tem uma conta, crie uma agora mesmo!</p>
+                    <div class="login-prompt__actions">
+                        <a href="{% url 'fazer_login' %}" class="botao-login">Fazer Login</a>
+                        <a href="{% url 'criar_conta' %}" class="botao-criar-conta">Criar Conta</a>
+                    </div>
+                </div>
+
+                {% else %}
+                <div class="checkout__container-logado" style="display: flex; justify-content: space-between; gap: 30px; width: 100%;">
+                    <div class="checkout__secao-principal" style="flex: 2; max-width: 65%;">
+                        <div class="checkout__secao-entrega">
+                            <div class="checkout__titulos">
+                                <p class="checkout__titulo">Endereço de Retirada</p>
+                            </div>
+                            <div class="checkout__endereco-cadastrado" style="display: block !important;">
+                                <p><strong>Todos os pedidos devem ser retirados presencialmente no seguinte endereço:</strong></p>
+                                <p>Av. Dr. Abelardo Pompéu do Amaral, 438 - Vila Industrial, Campinas - SP, 13035-590</p>
+                                
+                                {% comment %} ----- INÍCIO DA ALTERAÇÃO ----- {% endcomment %}
+                                <p style="margin-top: 1rem; color: #c0392b; font-weight: bold;">A retirada do pedido estará disponível a partir de Janeiro de 2026.</p>
+                                {% comment %} ----- FIM DA ALTERAÇÃO ----- {% endcomment %}
+
+                                <input type="hidden" name="endereco" value="1" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="checkout__secao-infos" style="flex: 1; max-width: 33%;">
+                        <div class="checkout__titulos checkout__titulos--mb">
+                            <p class="checkout__titulo">Resumo</p>
+                        </div>
+                        <div class="subtotal__infos">
+                            <p>Quantidade de Produtos</p>
+                            <p>{{ pedido.quantidade_total }}</p>
+                        </div>
+                        <div class="subtotal__infos subtotal__infos--sborda">
+                            <p>Total</p>
+                            <p style="display: flex; align-items:center"><img src="{% static 'images/moeda.png' %}" style="height:50px; width:50px">{{ pedido.preco_total_fragacoin }}</p>
+                        </div>
+                        <button class="subtotal__botao" type="submit">
+                            Finalizar Pedido
+                        </button>
+                    </div>
+                </div>
+                {% endif %}
+            </form>
+        </div>
+    </section>
+</main>
+{% endblock %}

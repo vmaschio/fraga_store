@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block body %}
+<main class="principal">
+    <section class="conta">
+        <div class="conta__container">
+            <div style="width: 100%; margin-bottom: 20px;">
+                <a href="{% url 'gerenciar_loja' %}" style="text-decoration: none; color: #666; font-size: 1.4rem; display: flex; align-items: center; gap: 8px;">
+                    <i class="fa-solid fa-arrow-left"></i> Voltar para Gerenciar Loja
+                </a>
+            </div>
+
+            <div class="checkout__titulos">
+                <p class="checkout__titulo">Gerenciar Estoque: {{ produto.nome }}</p>
+            </div>
+
+            {% if messages %}
+              {% for message in messages %}
+                  <div class="alert alert-{{ message.tags }}" style="color: #155724; background-color: #d4edda; border-color: #c3e6cb; padding: 1rem 1.5rem; border-radius: 4px; text-align: center; margin-bottom: 2rem;">
+                      {{ message }}
+                  </div>
+              {% endfor %}
+            {% endif %}
+            
+            <form class="conta__form" method="post">
+                {% csrf_token %}
+                <input type="hidden" name="adicionar_item" value="true">
+                <h4 style="width: 100%;">Adicionar Variação ao Estoque</h4>
+                <div class="conta__item">
+                    <label for="cor">Cor</label>
+                    <select name="cor" class="produtos__select" style="width:100%;" required>
+                        {% for cor in cores %}
+                        <option value="{{ cor.id }}">{{ cor.nome }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="conta__item">
+                    <label for="tamanho">Tamanho</label>
+                    <input name="tamanho" type="text" placeholder="Ex: P, M, G, 40, 42..." required>
+                </div>
+                <div class="conta__item">
+                    <label for="quantidade">Quantidade</label>
+                    <input name="quantidade" type="number" min="0" required>
+                </div>
+                <button class="subtotal__botao" type="submit" style="width: 100%;">Adicionar</button>
+            </form>
+
+            <form class="conta__form" method="post" style="padding: 0;">
+                {% csrf_token %}
+                <h4 style="width: 100%; padding: 2rem 3.12rem 0;">Atualizar Estoque Existente</h4>
+                <table class="tabela" style="width: 100%;">
+                    <thead>
+                        <tr>
+                            <th>Cor</th>
+                            <th>Tamanho</th>
+                            <th>Quantidade</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in itens_estoque %}
+                        <tr style="border-bottom: 1px solid #f0f0f0;">
+                            <td>{{ item.cor.nome }}</td>
+                            <td>{{ item.tamanho }}</td>
+                            <td>
+                                <input type="number" name="quantidade_{{ item.id }}" value="{{ item.quantidade }}" min="0" style="padding: 0.5rem; border: 1px solid #ccc; border-radius: 4px; width: 80px;">
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="3" style="text-align: center; padding: 2rem;">Nenhum item em estoque para este produto.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                 {% if itens_estoque %}
+                <button class="subtotal__botao" type="submit" style="margin: 2rem 3.12rem;">Atualizar Quantidades</button>
+                {% endif %}
+            </form>
+        </div>
+    </section>
+</main>
+{% endblock %}

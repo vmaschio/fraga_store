@@ -1,0 +1,136 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block body %}
+<main class="principal principal--padding-b principal--gap">
+    <div class="conta">
+        <div class="conta__container">
+            <h1 class="sacola__titulo">Painel Administrativo</h1>
+            
+            {% if messages %}
+            <div style="width: 100%; margin-bottom: 20px;">
+                {% for message in messages %}
+                <div class="alert {{ message.tags }}" style="padding: 10px; background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; border-radius: 4px;">
+                    {{ message }}
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            <section style="display: flex; gap: 20px; flex-wrap: wrap; width: 100%; margin-bottom: 40px;">
+                <div style="flex: 1; background: #f8f9fa; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); text-align: center;">
+                    <h3 style="font-size: 1.2rem; color: #666;">Pedidos Feitos</h3>
+                    <p style="font-size: 2rem; font-weight: bold; color: #333;">{{ qtde_pedidos }}</p>
+                </div>
+                <div style="flex: 1; background: #f8f9fa; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); text-align: center;">
+                    <h3 style="font-size: 1.2rem; color: #666;">Produtos Vendidos</h3>
+                    <p style="font-size: 2rem; font-weight: bold; color: #333;">{{ qtde_produtos }}</p>
+                </div>
+                <div style="flex: 1; background: #f8f9fa; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); text-align: center;">
+                    <h3 style="font-size: 1.2rem; color: #666;">Faturamento Total</h3>
+                    <p style="font-size: 2rem; font-weight: bold; color: #38ab6b;">{{ faturamento }} FC</p>
+                </div>
+            </section>
+
+            <section style="width: 100%; margin-bottom: 40px;">
+                <h2 style="font-size: 1.8rem; margin-bottom: 15px; border-bottom: 2px solid #eee; padding-bottom: 10px;">
+                    <i class="fa-solid fa-users"></i> Gerenciar Usuários e Saldos
+                </h2>
+                
+                <div style="overflow-x: auto;">
+                    <table style="width: 100%; border-collapse: collapse; min-width: 600px;">
+                        <thead>
+                            <tr style="background-color: #333; color: white; text-align: left;">
+                                <th style="padding: 12px; border-radius: 4px 0 0 4px;">Nome</th>
+                                <th style="padding: 12px;">Email</th>
+                                <th style="padding: 12px;">Saldo Atual</th>
+                                <th style="padding: 12px; border-radius: 0 4px 4px 0;">Ação</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for cliente in clientes %}
+                            <tr style="border-bottom: 1px solid #eee;">
+                                <td style="padding: 12px;">{{ cliente.nome|default:"-" }}</td>
+                                <td style="padding: 12px;">{{ cliente.email }}</td>
+                                <td style="padding: 12px;">
+                                    <form method="POST" action="{% url 'gerenciar_loja' %}" style="display: flex; gap: 10px; align-items: center;">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="atualizar_saldo" value="true">
+                                        <input type="hidden" name="cliente_id" value="{{ cliente.id }}">
+                                        
+                                        <input type="number" name="novo_saldo" value="{{ cliente.fragacoin }}" 
+                                               style="width: 100px; padding: 5px; border: 1px solid #ddd; border-radius: 4px;">
+                                        
+                                        <button type="submit" style="background-color: #38ab6b; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer;">
+                                            Salvar
+                                        </button>
+                                    </form>
+                                </td>
+                                <td style="padding: 12px;">
+                                    <a href="{% url 'admin:loja_cliente_change' cliente.id %}" target="_blank" style="color: #007bff; text-decoration: none; font-size: 0.9rem;">
+                                        Ver Detalhes
+                                    </a>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="4" style="padding: 20px; text-align: center;">Nenhum cliente cadastrado.</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section style="width: 100%;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 2px solid #eee; padding-bottom: 10px;">
+                    <h2 style="font-size: 1.8rem;">
+                        <i class="fa-solid fa-boxes-stacked"></i> Catálogo e Estoque
+                    </h2>
+                    <a href="{% url 'adicionar_produto' %}" style="background-color: #333; color: white; padding: 8px 15px; text-decoration: none; border-radius: 4px; font-size: 0.9rem;">
+                        + Novo Produto
+                    </a>
+                </div>
+
+                <div style="overflow-x: auto;">
+                    <table style="width: 100%; border-collapse: collapse; min-width: 600px;">
+                        <thead>
+                            <tr style="background-color: #333; color: white; text-align: left;">
+                                <th style="padding: 12px; border-radius: 4px 0 0 4px;">Imagem</th>
+                                <th style="padding: 12px;">Produto</th>
+                                <th style="padding: 12px;">Preço (FC)</th>
+                                <th style="padding: 12px; text-align: right; border-radius: 0 4px 4px 0;">Gerenciar</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for produto in produtos %}
+                            <tr style="border-bottom: 1px solid #eee;">
+                                <td style="padding: 12px;">
+                                    {% if produto.imagem %}
+                                    <img src="{{ produto.imagem.url }}" alt="{{ produto.nome }}" style="width: 40px; height: 40px; object-fit: cover; border-radius: 4px;">
+                                    {% else %}
+                                    <div style="width: 40px; height: 40px; background: #eee; border-radius: 4px;"></div>
+                                    {% endif %}
+                                </td>
+                                <td style="padding: 12px;"><strong>{{ produto.nome }}</strong></td>
+                                <td style="padding: 12px;">{{ produto.preco_fragacoin }}</td>
+                                <td style="padding: 12px; text-align: right;">
+                                    
+                                    <a href="{% url 'editar_produto' produto.id %}" style="background-color: #f0ad4e; color: white; padding: 6px 12px; text-decoration: none; border-radius: 4px; font-size: 0.9rem; margin-right: 5px;">
+                                        <i class="fa-solid fa-pen"></i> Detalhes
+                                    </a>
+
+                                    <a href="{% url 'gerenciar_estoque' produto.id %}" style="background-color: #007bff; color: white; padding: 6px 12px; text-decoration: none; border-radius: 4px; font-size: 0.9rem;">
+                                        <i class="fa-solid fa-box"></i> Estoque
+                                    </a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </div>
+    </div>
+</main>
+{% endblock %}
