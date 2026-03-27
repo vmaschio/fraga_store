@@ -1,8 +1,0 @@
-Para ativar a loja siga os passos abaixo.
-
-Passo 1 -> Abrir o anaconda prompt
-Passo 2 -> Ativar o ambiente virtual da loja com o comando "conda activate loja_env"
-Passo 3 -> Navegar até a pasta que se encontra o projeto com o comando "cd C:\Users\Fraga\Desktop\ecommerce"
-Passo 4 (Opcional) -> Excluir log do terminal para deixar visualização limpa da navegação na loja. Comando "cls"
-Passo 5 -> Rodar o projeto com o comando "python run_server.py"
-Passo 6 -> Conferir o endereço localhost http://localhost:8000
